@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Gamers\Controller;
-
+use GuzzleHttp\Client;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,19 +60,10 @@ class IndexController
         return $app['twig']->render('gamers.form.html.twig');
     }
 
-    public function responseAction(Request $request, Application $app) 
+    public function responseAction(Request $request, Application $app)
     {
-        $content = 'john';
-        $myJSON = json_encode($content);
-      //  echo $myJSON;
-      //  var_dump($myObj);
-        return new Response($myJSON,Response::HTTP_OK,array('Content-type' => 'application/json'));
+        return $app['repository.gamer']->response();
+        
     }
 
-
-    /* response 
-        return new Response($content,&statutCode,&header)
-        header["Content-type : application/json"]
-
-    */
 }
