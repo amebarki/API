@@ -1,2 +1,4 @@
-/var
-/vendor
+vendor/*
+var/*
+.idea/*
+composer.lock
