@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Gamers\Repository;
-
+use GuzzleHttp\Client;
 use App\Gamers\Entity\Gamer;
 use Doctrine\DBAL\Connection;
-
-/**
+use Symfony\Component\HttpFoundation\Response;/**
  * gamer repository.
  */
 class GamerRepository
@@ -63,19 +62,7 @@ class GamerRepository
         */
     public function getAllUsers($id)
     {
-      
 
-      /*     $queryBuilder = $this->db->createQueryBuilder();
-       $queryBuilder
-           ->select('u.*')
-           ->from('users', 'u')
-          ->where('gamerID = :id');
-       $statement = $queryBuilder->execute();
-       $usersData = $statement->fetchAll();
-       foreach ($usersData as $userData) {
-           $userEntityList[$userData['id']] = new user($userData['id'], $userData['nom'], $userData['prenom']);
-       
-       return $userEntityList;*/
        $queryBuilder = $this->db->createQueryBuilder();
        $queryBuilder
            ->select('u.*')
@@ -159,4 +146,16 @@ class GamerRepository
           ->setParameter(':team', $parameters['team']);
         $statement = $queryBuilder->execute();
     }
+
+
+public function response()
+{
+  $client = new Client();
+  $response = $client->request('GET', 'http://pokeapi.co/api/v2/pokemon/1');
+  return new Response(
+    $response->getBody(),
+    $response->getStatusCode(),
+    ['Content-type'=>'application/json']);
+}
+
 }
