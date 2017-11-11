@@ -26,7 +26,7 @@ return array(
     'App\\Users\\Repository\\' => array($baseDir . '/src/Users/Repository'),
     'App\\Users\\Entity\\' => array($baseDir . '/src/Users/Entity'),
     'App\\Users\\Controller\\' => array($baseDir . '/src/Users/Controller'),
-    'App\\Gamers\\Repository\\' => array($baseDir . '/src/Gamers/Repository'),
-    'App\\Gamers\\Entity\\' => array($baseDir . '/src/Gamers/Entity'),
-    'App\\Gamers\\Controller\\' => array($baseDir . '/src/Gamers/Controller'),
+    'App\\Pokemon\\Repository\\' => array($baseDir . '/src/Pokemon/Repository'),
+    'App\\Pokemon\\Entity\\' => array($baseDir . '/src/Pokemon/Entity'),
+    'App\\Pokemon\\Controller\\' => array($baseDir . '/src/Pokemon/Controller'),
 );

@@ -3,20 +3,19 @@
 use Silex\Application;
 use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\DoctrineServiceProvider;
+use GuzzleHttp\Client;
 
 $app = new Application();
 
 // Ajout des fournisseurs de services
 $app->register(new DoctrineServiceProvider());
-$app->register(new TwigServiceProvider(), array(
-    'twig.path' => __DIR__.'/../views',
-));
+
 
 //Ajout des repository
 $app['repository.user'] = function ($app) {
     return new App\Users\Repository\UserRepository($app['db']);
 };
 
-$app['repository.gamer'] = function ($app) {
-    return new App\Gamers\Repository\GamerRepository($app['db']);
+$app['repository.pokemon'] = function () {
+    return new App\Pokemon\Repository\PokemonRepository(new Client());
 };

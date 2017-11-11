@@ -41,8 +41,10 @@ class UserRepository
 
        $statement = $queryBuilder->execute();
        $usersData = $statement->fetchAll();
+
        foreach ($usersData as $userData) {
-           $userEntityList[$userData['id']] = new User($userData['id'], $userData['nom'], $userData['prenom'],$userData['gamerID']);
+
+           $userEntityList[$userData['id']] = new User($userData['id'], $userData['nom'], $userData['prenom']);
        }
 
        return $userEntityList;
@@ -54,7 +56,7 @@ class UserRepository
     * @param $id
     *   The id of the user to return.
     *
-    * @return array A collection of users, keyed by user id.
+    * @return User
     */
    public function getById($id)
    {
@@ -67,7 +69,7 @@ class UserRepository
        $statement = $queryBuilder->execute();
        $userData = $statement->fetchAll();
 
-       return new User($userData[0]['id'], $userData[0]['nom'], $userData[0]['prenom'],$userData['gamerID']);
+       return new User($userData[0]['id'], $userData[0]['nom'], $userData[0]['prenom']);
    }
 
     public function delete($id)
@@ -101,13 +103,6 @@ class UserRepository
             ->setParameter(':prenom', $parameters['prenom']);
         }
 
-        if($parameters['gamerID'])
-        {
-            $queryBuilder
-            ->set('gamerID', ':gamerID')
-              ->setParameter(':gamerID', $parameters['gamerID']);
-        }
-
         $statement = $queryBuilder->execute();
     }
 
@@ -120,12 +115,10 @@ class UserRepository
               array(
                 'nom' => ':nom',
                 'prenom' => ':prenom',
-                'gamerID' => ':gamerID',
               )
           )
           ->setParameter(':nom', $parameters['nom'])
-          ->setParameter(':prenom', $parameters['prenom'])
-          ->setParameter(':gamerID', $parameters['gamerID']);
+          ->setParameter(':prenom', $parameters['prenom']);
         $statement = $queryBuilder->execute();
     }
 }
