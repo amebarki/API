@@ -1,14 +1,11 @@
 {
+  "name" : "poke/service",
+  "description" : "",
   "require": {
     "silex/silex": "~2.0",
     "doctrine/dbal": "^2.5",
-    "guzzlehttp/guzzle": "^6.3"
-  },
-  "scripts": {
-    "run": [
-      "echo 'Started web server on http://localhost:8000'",
-      "php -S 0.0.0.0:8000 -t web web/index.php"
-    ]
+    "guzzlehttp/guzzle": "^6.3",
+    "tebru/gson-php": "^0.4.1"
   },
   "autoload": {
     "psr-4": {

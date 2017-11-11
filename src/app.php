@@ -1,7 +1,6 @@
 <?php
 
 use Silex\Application;
-use Silex\Provider\TwigServiceProvider;
 use Silex\Provider\DoctrineServiceProvider;
 use GuzzleHttp\Client;
 

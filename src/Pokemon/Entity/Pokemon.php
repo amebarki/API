@@ -1,6 +1,9 @@
 <?php
 
-namespace APP\Pokemon\Entity;
+namespace App\Pokemon\Entity;
+
+use Tebru\Gson\Annotation as Gson;
+
 
 
 class Pokemon

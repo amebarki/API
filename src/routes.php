@@ -6,6 +6,11 @@ $app->get('/users/new', 'App\Users\Controller\IndexController::newAction')->bind
 $app->post('/users/delete/{id}', 'App\Users\Controller\IndexController::deleteAction')->bind('users.delete');
 $app->post('/users/save', 'App\Users\Controller\IndexController::saveAction')->bind('users.save');
 
-$app->get('/pokemon/list', 'App\Pokemon\Controller\IndexController::listAction')->bind('pokemon.list');
-$app->get('/pokemon/{id}', 'App\Pokemon\Controller\IndexController::idAction')->bind('pokemon.id');
 
+
+$app->get('/pokemon/list', 'App\Pokemon\Controller\IndexController::listAction')->bind('pokemon.list');
+$app->get('/pokemon/receive', 'App\Pokemon\Controller\IndexController::receiveAction')->bind('pokemon.receive');
+$app->get('/pokemon/get/{id}', 'App\Pokemon\Controller\IndexController::idAction')->bind('pokemon.id');
+
+// http://pokecard.api/index.php/pokemon/get/1/parse/type
+//http://pokecard.api/index.php/pokemon/get/1/parse/type+compo+name+id
