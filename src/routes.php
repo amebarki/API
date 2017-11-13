@@ -10,6 +10,7 @@ $app->post('/users/save', 'App\Users\Controller\IndexController::saveAction')->b
 
 $app->get('/pokemon/list', 'App\Pokemon\Controller\IndexController::listAction')->bind('pokemon.list');
 $app->get('/pokemon/receive', 'App\Pokemon\Controller\IndexController::receiveAction')->bind('pokemon.receive');
+$app->get('/pokemon/generation/get/{id}', 'App\Pokemon\Controller\IndexController::generationAction')->bind('pokemon.generation');
 $app->get('/pokemon/get/{id}', 'App\Pokemon\Controller\IndexController::idAction')->bind('pokemon.id');
 
 // http://pokecard.api/index.php/pokemon/get/1/parse/type
