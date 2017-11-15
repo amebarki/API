@@ -14,8 +14,6 @@ class IndexController
         return $app['twig']->render('users.list.html.twig', array('users' => $users));
     }
 
-    
-
     public function deleteAction(Request $request, Application $app)
     {
         $parameters = $request->attributes->all();
