@@ -89,6 +89,8 @@ class PokemonRepository
     }
 
 
+
+
     public function getByGeneration($id){
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/generation/'.$id);
