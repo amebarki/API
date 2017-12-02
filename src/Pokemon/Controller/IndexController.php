@@ -33,6 +33,19 @@ class IndexController
     }
 
 
+    public function allPokemonAction(Request $request, Application $app)
+    {
+        return $app['repository.pokemon']->getAllPokemon();
+    }
 
+    public function allTypesAction(Request $request, Application $app)
+    {
+        return $app['repository.pokemon']->getAllTypes();
+    }
 
+    public function evolutionChainAction(Request $request, Application $app)
+    {
+        $params = $request->attributes->all();
+        return $app['repository.pokemon']->getEvolutionChain($params['id']);
+    }
 }
