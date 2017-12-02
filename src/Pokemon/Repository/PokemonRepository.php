@@ -27,7 +27,6 @@ class PokemonRepository
         );
     }
 
-
     public function getById($id) {
 
         $client = new Client();
@@ -48,7 +47,6 @@ class PokemonRepository
             ['Content-type'=>'application/json']
         );
     }
-
 
     public function getByName($name)
     {
@@ -88,23 +86,18 @@ class PokemonRepository
         );
     }
 
-
-
-
     public function getByGeneration($id){
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/generation/'.$id);
         $json_source = json_decode($res->getBody()->getContents(), true);
         $json_data = $json_source['pokemon_species'];
-        $var=0;
         $result = array();
-        $generation = array();
         foreach($json_data as $item) {
             $tmp = explode("/", $item['url']);
             $i = $tmp[6];
-            //$result[$var] = [['id'] => $item['name']];
-            $result[$var] = ['id' => $i , 'name' => $item['name']];
-            $var++;
+            $result[$i] = ['id' => $i , 'name' => $item['name'],
+                'sprite' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'.$i.'.png'];
+
         }
 
         return new Response(
@@ -113,6 +106,78 @@ class PokemonRepository
             ['Content-type'=>'application/json']
         );
     }
+
+    public function getAllPokemon(){
+        $client = new Client();
+        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/?limit=802');
+        $json_source = json_decode($res->getBody()->getContents(), true);
+        $json_data = $json_source['results'];
+        $var=0;
+        $result = array();
+        foreach($json_data as $item) {
+            $tmp = explode("/", $item['url']);
+            $i = $tmp[6];
+            $result[$var] = ['id' => $i , 'name' => $item['name'],
+                'sprite' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'.$i.'.png'];
+            $var++;
+        }
+
+        return new Response(
+            \GuzzleHttp\json_encode($result),
+            $res->getStatusCode(),
+            ['Content-type'=>'application/json']
+        );
+
+    }
+
+    public function getAllTypes()
+    {
+        $client = new Client();
+        $res = $client->request('GET', 'https://pokeapi.co/api/v2/type/');
+        $json_source = json_decode($res->getBody()->getContents(), true);
+        $json_data = $json_source['results'];
+        $var=0;
+        $types = array();
+        foreach($json_data as $item) {
+            $tmp = explode("/", $item['url']);
+            $i = $tmp[6];
+            $types[$var] = ['id' => $i , 'name' => $item['name']];
+            $var++;
+        }
+        return new Response(
+            \GuzzleHttp\json_encode($types),
+            $res->getStatusCode(),
+            ['Content-type'=>'application/json']
+        );
+    }
+
+    public function getEvolutionChain($id)
+    {
+        $client = new Client();
+        $res = $client->request('GET', 'https://pokeapi.co/api/v2/evolution-chain/' . $id);
+        $json_source = json_decode($res->getBody()->getContents(), true);
+        $json_data = $json_source['chain'];
+        $var = 0;
+        $evolution = $this->array_column_recursive($json_data,'name');
+        $evolution="";
+        var_dump(in_array('species',$json_data));
+        return new Response(
+            \GuzzleHttp\json_encode($evolution),
+            $res->getStatusCode(),
+            ['Content-type'=>'application/json']
+        );
+    }
+
+
+    function array_column_recursive(array $haystack, $needle) {
+        $found = [];
+        array_walk_recursive($haystack, function($value, $key) use (&$found, $needle) {
+            if ($key == $needle)
+                $found[] = $value;
+        });
+        return $found;
+    }
+
 
 }
 
