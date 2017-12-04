@@ -4,8 +4,7 @@
   "require": {
     "silex/silex": "~2.0",
     "doctrine/dbal": "^2.5",
-    "guzzlehttp/guzzle": "^6.3",
-    "tebru/gson-php": "^0.4.1"
+    "guzzlehttp/guzzle": "^6.3"
   },
   "autoload": {
     "psr-4": {
