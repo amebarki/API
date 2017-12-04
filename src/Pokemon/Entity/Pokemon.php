@@ -20,14 +20,14 @@ class Pokemon
     protected $description;
 
 
-    public function __construct($id, $name,$type1,$type2,$sprite,$desciption)
+    public function __construct($id, $name,$type1,$type2,$sprite,$description)
     {
         $this->id = $id;
         $this->name = $name;
         $this->type1 = $type1;
         $this->type2 = $type2;
         $this->sprite = $sprite;
-        $this->description = $desciption;
+        $this->description = $description;
     }
 
     public function setId($id)
