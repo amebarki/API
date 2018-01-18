@@ -7,27 +7,24 @@ use Symfony\Component\HttpFoundation\Request;
 
 class IndexController
 {
+
+    // Repository
     public function listAction(Request $request, Application $app)
     {
-        $users = $app['repository.user']->getAll();
-
-        return $app['twig']->render('users.list.html.twig', array('users' => $users));
+        return $app['repository.user']->getAll();;
     }
 
     public function deleteAction(Request $request, Application $app)
     {
         $parameters = $request->attributes->all();
-        $app['repository.user']->delete($parameters['id']);
 
-        return $app->redirect($app['url_generator']->generate('users.list'));
+        return $app['repository.user']->delete($parameters['id']);;
     }
 
     public function editAction(Request $request, Application $app)
     {
         $parameters = $request->attributes->all();
-        $user = $app['repository.user']->getById($parameters['id']);
-
-        return $app['twig']->render('users.form.html.twig', array('user' => $user));
+        return $app['repository.user']->getById($parameters['id']);;
     }
 
     public function saveAction(Request $request, Application $app)
@@ -44,6 +41,43 @@ class IndexController
 
     public function newAction(Request $request, Application $app)
     {
-        return $app['twig']->render('users.form.html.twig');
+        $parameters = $request->request->all();
+
+        return $app['repository.user']->insert($parameters);
     }
+
+    public function getIdAction(Request $request, Application $app)
+    {
+        $parameters = $request->attributes->all();
+        return $app['repository.user']->getById($parameters['id']);
+    }
+
+    public function getShareAction(Request $request, Application $app)
+    {
+        $parameters = $request->request->all();
+        return $app['repository.user']->sharePokemon($parameters);
+
+    }
+
+    public  function getOfferAction(Request $request, Application $app)
+    {
+        $parameters = $request->request->all();
+        return $app['repository.user']->insertOfferPokemon($parameters);
+    }
+
+    public function getlistPokemonAction(Request $request,Application $app){
+        $parameters = $request->attributes->all();
+        return $app['repository.user']->getListPokemon($parameters['id']);
+    }
+
+    public function getBoosterPackAction(Request $request, Application $app){
+        $parameters = $request->attributes->all();
+        return $app['repository.user']->getBoosterPack($parameters['id']);
+    }
+
+    public function getAcceptAction(Request $request, Application $app){
+        $parameters = $request->request->all();
+        return $app['repository.user']->acceptSharePokemon($parameters);
+    }
+
 }

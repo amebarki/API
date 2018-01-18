@@ -6,15 +6,13 @@ class User
 {
     protected $id;
 
-    protected $nom;
+    protected $name;
 
-    protected $prenom;
 
-    public function __construct($id, $nom, $prenom)
+    public function __construct($id, $name)
     {
         $this->id = $id;
-        $this->prenom = $prenom;
-        $this->nom = $nom;
+        $this->name = $name;
     }
 
     public function setId($id)
@@ -22,36 +20,35 @@ class User
         $this->id = $id;
     }
 
-    public function setNom($nom)
+    public function setName($name)
     {
-        $this->nom = $nom;
-    }
-
-    public function setPrenom($prenom)
-    {
-        $this->prenom = $prenom;
+        $this->name = $name;
     }
 
     public function getId()
     {
         return $this->id;
     }
-    public function getPrenom()
+
+
+    public function getName()
     {
-        return $this->prenom;
-    }
-    public function getNom()
-    {
-        return $this->nom;
+        return $this->name;
     }
 
     public function toArray()
     {
         $array = array();
         $array['id'] = $this->id;
-        $array['nom'] = $this->nom;
-        $array['prenom'] = $this->prenom;
+        $array['name'] = $this->name;
 
         return $array;
+    }
+
+    public function toJson()
+    {
+        $json_array = array('id' => $this->id,'name' => $this->name);
+        $str = \GuzzleHttp\json_encode($json_array);
+        return $str;
     }
 }

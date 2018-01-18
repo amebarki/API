@@ -9,43 +9,66 @@ use Symfony\Component\HttpFoundation\Request;
 class IndexController
 {
 
-    public function listAction(Request $request, Application $app)
-    {
-        return $app['repository.pokemon']->getAll();
-    }
+    // Service
 
     public function idAction(Request $request, Application $app)
     {
         $params = $request->attributes->all();
-        return $app['repository.pokemon']->getById($params['id']);
-        //return $app['repository.pokemon']->receive();
+        return $app['service.pokemon']->getById($params['id']);
     }
 
     public function receiveAction(Request $request, Application $app)
     {
-        return $app['repository.pokemon']->receive();
+        $params = $request->request->all();
+
+        return $app['service.pokemon']->receive($params);
     }
 
     public function generationAction(Request $request, Application $app)
     {
         $params = $request->attributes->all();
-        return $app['repository.pokemon']->getByGeneration($params['id']);
+        return $app['service.pokemon']->getByGeneration($params['id']);
     }
-
 
     public function allPokemonAction(Request $request, Application $app)
     {
-        return $app['repository.pokemon']->getAllPokemon();
+        return $app['service.pokemon']->getAllPokemon();
     }
 
     public function allTypesAction(Request $request, Application $app)
     {
-        return $app['repository.pokemon']->getAllTypes();
+        return $app['service.pokemon']->getAllTypes();
     }
 
     public function evolutionChainAction(Request $request, Application $app)
     {
         $params = $request->attributes->all();
-        return $app['repository.pokemon']->getEvolutionChain($params['id']);
+        return $app['service.pokemon']->getEvolutionChain($params['id']);
+    }
+
+
+
+    // Repository
+    public function listAction(Request $request, Application $app)
+    {
+        return  $app['repository.pokemon']->getAll();;
+    }
+
+    public function deleteAction(Request $request, Application $app)
+    {
+        $parameters = $request->attributes->all();
+        return $app['repository.pokemon']->delete($parameters['id']);
+    }
+
+    public function getIdAction(Request $request, Application $app)
+    {
+        $parameters = $request->attributes->all();
+        return $app['repository.pokemon']->getById($parameters['id']);
+    }
+
+    public function newAction(Request $request, Application $app)
+    {
+        $parameters = $request->request->all();
+        return $app['repository.pokemon']->insert($parameters);
     }
 }

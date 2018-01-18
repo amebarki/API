@@ -3,179 +3,147 @@
 namespace App\Pokemon\Repository;
 
 use Symfony\Component\HttpFoundation\Response;
-use GuzzleHttp\Client;
+use Doctrine\DBAL\Connection;
 use App\Pokemon\Entity\Pokemon;
+
 /**
  *
  */
 class PokemonRepository
 {
-    protected $client;
+    protected $db;
 
-    public function __construct(Client $client)
+    public function __construct(Connection $db)
+
     {
-        $this->client = $client;
+        $this->db = $db;
     }
 
-    public function getAll() {
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokedex/1/');
-        return new Response(
-            $res->getBody(),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
-    }
-
-    public function getById($id) {
-
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/'.$id);
-        $json_data = json_decode($res->getBody()->getContents(), true);
-        $name_tmp = $json_data['forms']['0']['name'];
-        $id_tmp = $json_data['id'];
-        $type1_tmp = $json_data['types']['1']['type']['name'];
-        $type2_tmp = $json_data['types']['0']['type']['name'];
-        $sprite_tmp = $json_data['sprites']['front_default'];
-        $tmp_desc = $this->getDescById($id);
-        $pokemon = new Pokemon($id_tmp,$name_tmp,$type1_tmp,$type2_tmp,$sprite_tmp,$tmp_desc);
-
-       // return $pokemon;
-        return new Response(
-            $pokemon->toJson(),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
-    }
-
-    public function getByName($name)
+    public function getAll()
     {
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/'.$name);
-        $json_data = json_decode($res->getBody()->getContents(), true);
-        $name_tmp = $json_data['forms']['0']['name'];
-        $id_tmp = $json_data['id'];
-        $type1_tmp = $json_data['types']['1']['type']['name'];
-        $type2_tmp = $json_data['types']['0']['type']['name'];
-        $sprite_tmp = $json_data['sprites']['front_default'];
-        $tmp_desc = $this->getDescById($name);
-        $pokemon = new Pokemon($id_tmp,$name_tmp,$type1_tmp,$type2_tmp,$sprite_tmp,$tmp_desc);
-        return new Response(
-            $pokemon->toJson(),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
-        return $pokemon;
-    }
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('p.*')
+            ->from('pokemons', 'p');
 
-    public function getDescById($id)
-    {
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon-species/'.$id);
-        $json_data = json_decode($res->getBody()->getContents(), true);
-        $desc = $json_data['flavor_text_entries']['1']['flavor_text'];
-        return $desc;
-    }
+        $statement = $queryBuilder->execute();
+        $pokemonsData = $statement->fetchAll();
+        $res = array();
+        foreach ($pokemonsData as $pokemonData) {
+            $poke = new Pokemon($pokemonData['id'], $pokemonData['name'],
+                $this->getTypeName($pokemonData['type_one_id']), $this->getTypeName($pokemonData['type_two_id']),
+                $pokemonData['sprite'], $pokemonData['description']
+            );
+            $res[$poke->getId()] = ['id' => $poke->getId(),'name' =>$poke->getName(),
+                'description' => $poke->getDescription(),'sprite' =>$poke->getSprite(),
+                'type1' => $poke->getType1(),'type2' =>$poke->getType2()];
+        }
 
-    public function receive() {
-        $number = json_encode(array('lucky_number'=>mt_rand(0, 100)));
         return new Response(
-            $number,
+             \GuzzleHttp\json_encode($res),
             200,
-            ['Content-type'=>'application/json']
+            ['Content-type' => 'application/json']
         );
     }
 
-    public function getByGeneration($id){
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/generation/'.$id);
-        $json_source = json_decode($res->getBody()->getContents(), true);
-        $json_data = $json_source['pokemon_species'];
-        $result = array();
-        foreach($json_data as $item) {
-            $tmp = explode("/", $item['url']);
-            $i = $tmp[6];
-            $result[$i] = ['id' => $i , 'name' => $item['name'],
-                'sprite' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'.$i.'.png'];
-
-        }
-
-        return new Response(
-            \GuzzleHttp\json_encode($result),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
-    }
-
-    public function getAllPokemon(){
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/?limit=802');
-        $json_source = json_decode($res->getBody()->getContents(), true);
-        $json_data = $json_source['results'];
-        $var=0;
-        $result = array();
-        foreach($json_data as $item) {
-            $tmp = explode("/", $item['url']);
-            $i = $tmp[6];
-            $result[$var] = ['id' => $i , 'name' => $item['name'],
-                'sprite' => 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'.$i.'.png'];
-            $var++;
-        }
-
-        return new Response(
-            \GuzzleHttp\json_encode($result),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
-
-    }
-
-    public function getAllTypes()
+    public function getById($id)
     {
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/type/');
-        $json_source = json_decode($res->getBody()->getContents(), true);
-        $json_data = $json_source['results'];
-        $var=0;
-        $types = array();
-        foreach($json_data as $item) {
-            $tmp = explode("/", $item['url']);
-            $i = $tmp[6];
-            $types[$var] = ['id' => $i , 'name' => $item['name']];
-            $var++;
-        }
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('p.*')
+            ->from('pokemons', 'p')
+            ->where('id = ?')
+            ->setParameter(0, $id);
+        $statement = $queryBuilder->execute();
+        $pokemonData = $statement->fetchAll();
+        $pokemon = new Pokemon($pokemonData[0]['id'], $pokemonData[0]['name'],
+            $this->getTypeName($pokemonData[0]['type_one_id']), $this->getTypeName($pokemonData[0]['type_two_id']),
+            $pokemonData[0]['sprite'], $pokemonData[0]['description']
+        );
+
         return new Response(
-            \GuzzleHttp\json_encode($types),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
+            $pokemon->toJson(),
+            200,
+            ['Content-type' => 'application/json']
         );
     }
 
-    public function getEvolutionChain($id)
+
+    public function delete($id)
     {
-        $client = new Client();
-        $res = $client->request('GET', 'https://pokeapi.co/api/v2/evolution-chain/' . $id);
-        $json_source = json_decode($res->getBody()->getContents(), true);
-        $json_data = $json_source['chain'];
-        $var = 0;
-        $evolution = $this->array_column_recursive($json_data,'name');
-        $evolution="";
-        var_dump(in_array('species',$json_data));
-        return new Response(
-            \GuzzleHttp\json_encode($evolution),
-            $res->getStatusCode(),
-            ['Content-type'=>'application/json']
-        );
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->delete('pokemons')
+            ->where('id = :id')
+            ->setParameter(':id', $id);
+
+        $statement = $queryBuilder->execute();
     }
 
+    public function insert($parameters)
+    {
 
-    function array_column_recursive(array $haystack, $needle) {
-        $found = [];
-        array_walk_recursive($haystack, function($value, $key) use (&$found, $needle) {
-            if ($key == $needle)
-                $found[] = $value;
-        });
-        return $found;
+        $typeOne = $this->getTypeid($parameters['type_one_id']);
+        $typeTwo = $this->getTypeid($parameters['type_two_id']);
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->insert('pokemons')
+            ->values(
+                array(
+                    'id' => ':id',
+                    'name' => ':name',
+                    'sprite' => ':sprite',
+                    'description' => ':description',
+                    'type_one_id' => ':type_one_id',
+                    'type_two_id' => ':type_two_id',
+                )
+            )
+            ->setParameter(':id', $parameters['id'])
+            ->setParameter(':name', $parameters['name'])
+            ->setParameter(':sprite', $parameters['sprite'])
+            ->setParameter(':description', $parameters['description'])
+            ->setParameter(':type_one_id',  $typeOne)
+            ->setParameter(':type_two_id', $typeTwo);
+
+        $statement = $queryBuilder->execute();
+    }
+
+    public function getTypeName($id)
+    {
+        if($id !=null){
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('p.*')
+            ->from('types', 'p')
+            ->where('id = ?')
+            ->setParameter(0, $id);
+        $statement = $queryBuilder->execute();
+        $typesData = $statement->fetchAll();
+        $typeName = $typesData[0]['name'];
+
+        return $typeName;
+        }
+        else
+            return null;
+    }
+
+    public function getTypeId($name)
+    {
+        if($name !=null){
+            $queryBuilder = $this->db->createQueryBuilder();
+            $queryBuilder
+                ->select('p.*')
+                ->from('types', 'p')
+                ->where('name = ?')
+                ->setParameter(0, $name);
+            $statement = $queryBuilder->execute();
+            $typesData = $statement->fetchAll();
+            $typeId = $typesData[0]['id'];
+
+            return $typeId;
+        }
+        else
+            return null;
     }
 
 

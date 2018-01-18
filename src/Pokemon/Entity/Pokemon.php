@@ -131,7 +131,7 @@ class Pokemon
 
        $str = \GuzzleHttp\json_encode($json_array);
 
-        return $str;
+                return $str;
     }
 
 }
