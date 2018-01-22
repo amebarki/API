@@ -82,7 +82,6 @@ class PokemonRepository
 
     public function insert($parameters)
     {
-
         $typeOne = $this->getTypeid($parameters['type_one_id']);
         $typeTwo = $this->getTypeid($parameters['type_two_id']);
         $queryBuilder = $this->db->createQueryBuilder();
@@ -104,7 +103,6 @@ class PokemonRepository
             ->setParameter(':description', $parameters['description'])
             ->setParameter(':type_one_id',  $typeOne)
             ->setParameter(':type_two_id', $typeTwo);
-
         $statement = $queryBuilder->execute();
     }
 
@@ -132,18 +130,17 @@ class PokemonRepository
         if($name !=null){
             $queryBuilder = $this->db->createQueryBuilder();
             $queryBuilder
-                ->select('p.*')
-                ->from('types', 'p')
+                ->select('t.*')
+                ->from('types', 't')
                 ->where('name = ?')
                 ->setParameter(0, $name);
             $statement = $queryBuilder->execute();
             $typesData = $statement->fetchAll();
             $typeId = $typesData[0]['id'];
-
             return $typeId;
         }
         else
-            return null;
+            return -1;
     }
 
 

@@ -51,11 +51,23 @@ class IndexController
         $parameters = $request->attributes->all();
         return $app['repository.user']->getById($parameters['id']);
     }
+    public function getFacebookIdAction(Request $request, Application $app)
+    {
+        $parameters = $request->attributes->all();
+        return $app['repository.user']->getUserIdByFacebook($parameters['id']);
+    }
+
+    public function getGoogleIdAction(Request $request, Application $app)
+    {
+        $parameters = $request->attributes->all();
+        return $app['repository.user']->getUserIdByGoogle($parameters['id']);
+    }
+
 
     public function getShareAction(Request $request, Application $app)
     {
         $parameters = $request->request->all();
-        return $app['repository.user']->sharePokemon($parameters);
+        return      $app['repository.user']->sharePokemon($parameters);
 
     }
 

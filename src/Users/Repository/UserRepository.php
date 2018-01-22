@@ -80,7 +80,8 @@ class UserRepository
      * @param $facebookId of the user
      * @return mixed user_id of the user in the table
      */
-    public function getUserIdByFacebook($facebookId){
+    public function getUserIdByFacebook($facebookId)
+    {
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->select('u.*')
@@ -90,7 +91,11 @@ class UserRepository
         $statement = $queryBuilder->execute();
         $userData = $statement->fetchAll();
         $user_id = $userData[0]['id'];
-        return $user_id;
+        return new Response(
+            $user_id,
+            200,
+            ['Content-type' => 'application/json']
+        );
     }
 
     /**
@@ -108,7 +113,11 @@ class UserRepository
         $statement = $queryBuilder->execute();
         $userData = $statement->fetchAll();
         $user_id = $userData[0]['id'];
-        return $user_id;
+        return new Response(
+            $user_id,
+            200,
+            ['Content-type' => 'application/json']
+        );
     }
 
     /**
@@ -213,6 +222,7 @@ class UserRepository
 
             $sprite_tmp = $json_data['sprites']['front_default'];
             $tmp_desc = $pokeService->getDescById($id_tmp);
+
         }
 
 
@@ -238,7 +248,7 @@ class UserRepository
                 'user_id' => ':userId',
                 'pokemon_id' => ':pokemonId'
             ))
-            ->setParameters(array(':userId' => $parameters['user1_id'], ':pokemonID' => $parameters['pokemon2_id']));
+            ->setParameters(array(':userId' => $parameters['user_id'], ':pokemonId' => $parameters['pokemon_wanted_id']));
         $statement = $queryBuilder->execute();
 
         $queryBuilder = $this->db->createQueryBuilder();
@@ -248,14 +258,14 @@ class UserRepository
                 'user_id' => ':userId',
                 'pokemon_id' => ':pokemonId'
             ))
-            ->setParameters(array(':userID' => $parameters['user2_id'], ':pokemonID' => $parameters['pokemon1_id']));
+            ->setParameters(array(':userId' => $parameters['user2_id'], ':pokemonId' => $parameters['pokemon_offer_id']));
         $statement = $queryBuilder->execute();
 
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->delete('cardPokemons')
             ->where('user_id = :userId AND pokemon_id = :pokemonId')
-            ->setParameters(array(':userId' => $parameters['user1_id'], ':pokemonId' => $parameters['pokemon1_id']));
+            ->setParameters(array(':userId' => $parameters['user_id'], ':pokemonId' => $parameters['pokemon_offer_id']));
         $statement = $queryBuilder->execute();
 
 
@@ -263,12 +273,12 @@ class UserRepository
         $queryBuilder
             ->delete('cardPokemons')
             ->where('user_id = :userId AND pokemon_id = :pokemonId')
-            ->setParameters(array(':userId' => $parameters['user2_id'], ':pokemonId' => $parameters['pokemon2_id']));
+            ->setParameters(array(':userId' => $parameters['user2_id'], ':pokemonId' => $parameters['pokemon_wanted_id']));
         $statement = $queryBuilder->execute();
 
 
         return new Response(
-            \GuzzleHttp\json_encode(array("id" => $parameters['pokemon2_id'])),
+            "Things work hopefully",
             200,
             ['Content-type' => 'application/json']
         );
@@ -282,7 +292,7 @@ class UserRepository
         // test two id to recup user id
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
-            ->insert('exchange')
+            ->insert('exchanges')
             ->values(array(
                 'user_id' => ':user_id',
                 'pokemon_offer_id' => ':pokemon_offer_id',
@@ -300,21 +310,18 @@ class UserRepository
     public function acceptSharePokemon($parameters)
     {
         // offer_accepted = 1 -> let's go
+        if ($parameters['offer_accepted']) {
 
-        // parameters -> id user 2  / id exchange / accept_offer
-        // update table exchanges with the id of the exchange accepted
-        $queryBuilder = $this->db->createQueryBuilder();
-        $queryBuilder
-            ->update('exchange')
-            ->where('id = :exchange_id')
-            ->setParameter(':id', $parameters['exchange_id']);
-
-        if ($parameters['accept_offer']) {
+            $queryBuilder = $this->db->createQueryBuilder();
             $queryBuilder
-                ->set('accept_offer', ':accept_offer')
-                ->setParameter(':accept_offer', $parameters['accept_offer']);
+                ->update('exchanges')
+                ->where('id = :id')
+                ->setParameter(':id', $parameters['exchange_id']);
+            $queryBuilder
+                ->set('offer_accepted', ':offer_accepted')
+                ->setParameter(':offer_accepted', $parameters['offer_accepted']);
+            $statement = $queryBuilder->execute();
         }
-        $statement = $queryBuilder->execute();
         $exchangeData = $this->getExchange($parameters['exchange_id']);
         $exchangeData += ["user2_id" => $parameters['user2_id']];
         // proceed exchange pokemons
@@ -335,7 +342,7 @@ class UserRepository
             ->setParameter(0, $exchange_id);
         $statement = $queryBuilder->execute();
         $exchangeData = $statement->fetchAll();
-       return $exchangeData[0];
+        return $exchangeData[0];
 
     }
 

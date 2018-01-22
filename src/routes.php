@@ -6,9 +6,12 @@ $app->get('/local/users/edit/{id}', 'App\Users\Controller\IndexController::editA
 $app->post('/local/users/new', 'App\Users\Controller\IndexController::newAction')->bind('users.new');
 $app->post('/local/users/delete/{id}', 'App\Users\Controller\IndexController::deleteAction')->bind('users.delete');
 $app->post('/local/users/save', 'App\Users\Controller\IndexController::saveAction')->bind('users.save');
+$app->get('/local/users/facebook/get/{id}', 'App\Users\Controller\IndexController::getFacebookIdAction')->bind('users.getFacebookId');
+$app->get('/local/users/google/get/{id}', 'App\Users\Controller\IndexController::getGoogleIdAction')->bind('users.getGoogleId');
 $app->get('/local/users/get/{id}', 'App\Users\Controller\IndexController::getIdAction')->bind('users.getId');
 $app->get('local/users/get/{id}/pokemon/list', 'App\Users\Controller\IndexController::getlistPokemonAction')->bind('users.listPokemon');
 $app->get('local/users/get/{id}/pokemon/booster', 'App\Pokemon\Controller\IndexController::getBoosterPackAction')->bind('pokemon.booster');
+
 $app->post('local/users/share', 'App\Users\Controller\IndexController::getShareAction')->bind('users.share');
 $app->post('local/users/offer','App\Users\Controller\IndexController::getOfferAction')->bind('users.offer');
 $app->post('local/users/accept','App\Users\Controller\IndexController::getAcceptAction')->bind('users.accept');
