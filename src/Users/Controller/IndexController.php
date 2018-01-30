@@ -77,6 +77,10 @@ class IndexController
         return $app['repository.user']->insertOfferPokemon($parameters);
     }
 
+    public function getListOfferAction(Request $request, Application $app){
+        return $app['repository.user']->getListOffer();
+    }
+
     public function getlistPokemonAction(Request $request,Application $app){
         $parameters = $request->attributes->all();
         return $app['repository.user']->getListPokemon($parameters['id']);

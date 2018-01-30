@@ -302,6 +302,11 @@ class UserRepository
                 ':pokemon_offer_id' => $parameters['pokemon_offer_id'],
                 ':pokemon_wanted_id' => $parameters['pokemon_wanted_id']));
         $statement = $queryBuilder->execute();
+        return new Response(
+            "Offer insert hopefully",
+            200,
+            ['Content-type' => 'application/json']
+        );
     }
 
     /**
@@ -326,6 +331,12 @@ class UserRepository
         $exchangeData += ["user2_id" => $parameters['user2_id']];
         // proceed exchange pokemons
         $this->sharePokemon($exchangeData);
+        return new Response(
+            "Exchange accepted hopefully",
+            200,
+            ['Content-type' => 'application/json']
+        );
+
     }
 
     /**
@@ -354,7 +365,7 @@ class UserRepository
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->select('e.*')
-            ->from('exchange', 'e');
+            ->from('exchanges', 'e');
 
         $statement = $queryBuilder->execute();
         $exchangesData = $statement->fetchAll();

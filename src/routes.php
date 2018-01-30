@@ -12,10 +12,10 @@ $app->get('/local/users/get/{id}', 'App\Users\Controller\IndexController::getIdA
 $app->get('local/users/get/{id}/pokemon/list', 'App\Users\Controller\IndexController::getlistPokemonAction')->bind('users.listPokemon');
 $app->get('local/users/get/{id}/pokemon/booster', 'App\Pokemon\Controller\IndexController::getBoosterPackAction')->bind('pokemon.booster');
 
+$app->get('local/users/list/offer', 'App\Users\Controller\IndexController::getListOfferAction')->bind('pokemon.listOffer');
 $app->post('local/users/share', 'App\Users\Controller\IndexController::getShareAction')->bind('users.share');
 $app->post('local/users/offer','App\Users\Controller\IndexController::getOfferAction')->bind('users.offer');
 $app->post('local/users/accept','App\Users\Controller\IndexController::getAcceptAction')->bind('users.accept');
-
 // Service Pokemon
 $app->post('/pokemon/receive', 'App\Pokemon\Controller\IndexController::receiveAction')->bind('pokemon.receive');
 $app->get('/pokemon/all', 'App\Pokemon\Controller\IndexController::allPokemonAction')->bind('pokemon.all');
