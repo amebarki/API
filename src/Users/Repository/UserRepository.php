@@ -234,13 +234,48 @@ class UserRepository
             ->setParameter(':id', $id);
         $statement = $queryBuilder->execute();
         $userData = $statement->fetchAll();
+		$pokemons = [];
+		$i= 0;
+		foreach ($userData as $data) {
+				$data['type1'] = $this->getTypeName($data['type1']);
+				$data['type2'] = $this->getTypeName($data['type2']);
+				if($data['type2']== null)
+					$data['type2'] = "null";
+				if($data['type1']== null)
+					$data['type1'] = "null";		
+				$pokemons[$i] = ['id' => $data['id'], 'name' => $data['name'],
+						'sprite' => $data['sprite'],
+						'description' => $data['description'],
+						'type1' => $data['type1'],
+						'type2' => $data['type2']];
+		$i++;
+		}
         return new Response(
-            \GuzzleHttp\json_encode($userData),
+            \GuzzleHttp\json_encode($pokemons),
             200,
             ['Content-type' => 'application/json']
         );
     }
 
+	
+	public function getTypeName($id)
+    {
+        if($id !=null){
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('p.*')
+            ->from('types', 'p')
+            ->where('id = ?')
+            ->setParameter(0, $id);
+        $statement = $queryBuilder->execute();
+        $typesData = $statement->fetchAll();
+        $typeName = $typesData[0]['name'];
+
+        return $typeName;
+        }
+        else
+            return null;
+    }
 
 
     /**
