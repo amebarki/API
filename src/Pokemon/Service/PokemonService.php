@@ -35,19 +35,19 @@ class PokemonService
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/' . $id);
         $json_data = json_decode($res->getBody()->getContents(), true);
-        $name_tmp = $json_data['forms']['0']['name'];
-        $id_tmp = $json_data['id'];
+        $name = $json_data['forms']['0']['name'];
+        $id = $json_data['id'];
         if (count($json_data['types']) == 2) {
-            $type1_tmp = $json_data['types']['1']['type']['name'];
-            $type2_tmp = $json_data['types']['0']['type']['name'];
+            $type1 = $json_data['types']['1']['type']['name'];
+            $type2 = $json_data['types']['0']['type']['name'];
         } else {
-            $type2_tmp = null;
-            $type1_tmp = $json_data['types']['0']['type']['name'];
+            $type2 = null;
+            $type1 = $json_data['types']['0']['type']['name'];
         }
 
-        $sprite_tmp = $json_data['sprites']['front_default'];
-        $tmp_desc = $this->getDescById($id);
-        $pokemon = new Pokemon($id_tmp, $name_tmp, $type1_tmp, $type2_tmp, $sprite_tmp, $tmp_desc);
+        $sprite = $json_data['sprites']['front_default'];
+        $desc = $this->getDescById($id);
+        $pokemon = new Pokemon($id, $name, $type1, $type2, $sprite, $desc);
 
         // return $pokemon;
         return new Response(
@@ -63,19 +63,19 @@ class PokemonService
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/' . $id);
         $json_data = json_decode($res->getBody()->getContents(), true);
-        $name_tmp = $json_data['forms']['0']['name'];
-        $id_tmp = $json_data['id'];
+        $name = $json_data['forms']['0']['name'];
+        $id = $json_data['id'];
         if (count($json_data['types']) == 2) {
-            $type1_tmp = $json_data['types']['1']['type']['name'];
-            $type2_tmp = $json_data['types']['0']['type']['name'];
+            $type1 = $json_data['types']['1']['type']['name'];
+            $type2 = $json_data['types']['0']['type']['name'];
         } else {
-            $type2_tmp = null;
-            $type1_tmp = $json_data['types']['0']['type']['name'];
+            $type2 = null;
+            $type1 = $json_data['types']['0']['type']['name'];
         }
 
-        $sprite_tmp = $json_data['sprites']['front_default'];
-        $tmp_desc = $this->getDescById($id);
-        $pokemon = new Pokemon($id_tmp, $name_tmp, $type1_tmp, $type2_tmp, $sprite_tmp, $tmp_desc);
+        $sprite = $json_data['sprites']['front_default'];
+        $desc = $this->getDescById($id);
+        $pokemon = new Pokemon($id, $name, $type1, $type2, $sprite, $desc);
 
         return $pokemon;
 
@@ -86,13 +86,13 @@ class PokemonService
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/' . $name);
         $json_data = json_decode($res->getBody()->getContents(), true);
-        $name_tmp = $json_data['forms']['0']['name'];
-        $id_tmp = $json_data['id'];
-        $type1_tmp = $json_data['types']['1']['type']['name'];
-        $type2_tmp = $json_data['types']['0']['type']['name'];
-        $sprite_tmp = $json_data['sprites']['front_default'];
-        $tmp_desc = $this->getDescById($name);
-        $pokemon = new Pokemon($id_tmp, $name_tmp, $type1_tmp, $type2_tmp, $sprite_tmp, $tmp_desc);
+        $name = $json_data['forms']['0']['name'];
+        $id = $json_data['id'];
+        $type1 = $json_data['types']['1']['type']['name'];
+        $type2 = $json_data['types']['0']['type']['name'];
+        $sprite = $json_data['sprites']['front_default'];
+        $desc = $this->getDescById($name);
+        $pokemon = new Pokemon($id, $name, $type1, $type2, $sprite, $desc);
         return new Response(
             $pokemon->toJson(),
             $res->getStatusCode(),

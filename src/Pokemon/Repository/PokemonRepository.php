@@ -31,7 +31,7 @@ class PokemonRepository
         $res = array();
         foreach ($pokemonsData as $pokemonData) {
             $poke = new Pokemon($pokemonData['id'], $pokemonData['name'],
-                $this->getTypeName($pokemonData['type_one_id']), $this->getTypeName($pokemonData['type_two_id']),
+                $this->getTypeName($pokemonData['type1']), $this->getTypeName($pokemonData['type2']),
                 $pokemonData['sprite'], $pokemonData['description']
             );
             $res[$poke->getId()] = ['id' => $poke->getId(),'name' =>$poke->getName(),
@@ -57,7 +57,7 @@ class PokemonRepository
         $statement = $queryBuilder->execute();
         $pokemonData = $statement->fetchAll();
         $pokemon = new Pokemon($pokemonData[0]['id'], $pokemonData[0]['name'],
-            $this->getTypeName($pokemonData[0]['type_one_id']), $this->getTypeName($pokemonData[0]['type_two_id']),
+            $this->getTypeName($pokemonData[0]['type1']), $this->getTypeName($pokemonData[0]['type2']),
             $pokemonData[0]['sprite'], $pokemonData[0]['description']
         );
 
@@ -82,8 +82,8 @@ class PokemonRepository
 
     public function insert($parameters)
     {
-        $typeOne = $this->getTypeid($parameters['type_one_id']);
-        $typeTwo = $this->getTypeid($parameters['type_two_id']);
+        $typeOne = $this->getTypeid($parameters['type1']);
+        $typeTwo = $this->getTypeid($parameters['type2']);
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->insert('pokemons')
@@ -93,16 +93,16 @@ class PokemonRepository
                     'name' => ':name',
                     'sprite' => ':sprite',
                     'description' => ':description',
-                    'type_one_id' => ':type_one_id',
-                    'type_two_id' => ':type_two_id',
+                    'type1' => ':type1',
+                    'type2' => ':type2',
                 )
             )
             ->setParameter(':id', $parameters['id'])
             ->setParameter(':name', $parameters['name'])
             ->setParameter(':sprite', $parameters['sprite'])
             ->setParameter(':description', $parameters['description'])
-            ->setParameter(':type_one_id',  $typeOne)
-            ->setParameter(':type_two_id', $typeTwo);
+            ->setParameter(':type1',  $typeOne)
+            ->setParameter(':type2', $typeTwo);
         $statement = $queryBuilder->execute();
     }
 

@@ -84,6 +84,9 @@ class UserRepository
         }
     }
 
+	
+	
+	
     public function getById($email)
     {
         $queryBuilder = $this->db->createQueryBuilder();
@@ -97,7 +100,18 @@ class UserRepository
         return $userData[0]['id'];
     }
 
-
+ public function getEmailById($id)
+    {
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('u.*')
+            ->from('users', 'u')
+            ->where('id = ?')
+            ->setParameter(0, $id);
+        $statement = $queryBuilder->execute();
+        $userData = $statement->fetchAll();
+        return $userData[0]['email'];
+    }
 
 
     /**
@@ -242,9 +256,7 @@ class UserRepository
     {
         //$paramaters['id_user1'] $paramaters['id_user2'] $paramaters['id_pokemon1'] $paramaters['id_pokemon2']
         //$paramaters['user1_email'] $paramaters['user2_email'] $paramaters['id_pokemon1'] $paramaters['id_pokemon2']
-
         // parameters -> email user get user id after
-
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->insert('cardPokemons')
@@ -379,11 +391,14 @@ class UserRepository
 
         $statement = $queryBuilder->execute();
         $exchangesData = $statement->fetchAll();
-
+		
         foreach ($exchangesData as $exchangeData) {
-            $result[$exchangeData['id']] = ['id' => $exchangeData['id'], 'user_id' => $exchangeData['user_id'],
+			$email = $this->getEmailById($exchangeData['user_id']);
+            $result[$exchangeData['id']] = ['id' => $exchangeData['id'], 'email' => $email,
                 'pokemon_offer_id' => $exchangeData['pokemon_offer_id'],
-                'pokemon_wanted_id' => $exchangeData['pokemon_wanted_id']];
+                'pokemon_wanted_id' => $exchangeData['pokemon_wanted_id'],
+				'offer_accepted' => $exchangeData['offer_accepted']
+				];
         }
         return new Response(
             \GuzzleHttp\json_encode($result),
