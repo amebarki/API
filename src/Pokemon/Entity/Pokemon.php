@@ -7,17 +7,17 @@ namespace App\Pokemon\Entity;
 
 class Pokemon
 {
-    protected $id;
+    public $id;
 
-    protected $name;
+    public $name;
 
-    protected $type1;
+    public $type1;
 
-    protected  $type2;
+    public  $type2;
 
-    protected $sprite;
+    public $sprite;
 
-    protected $description;
+    public $description;
 
 
     public function __construct($id, $name,$type1,$type2,$sprite,$description)
@@ -131,7 +131,7 @@ class Pokemon
 
        $str = \GuzzleHttp\json_encode($json_array);
 
-                return $str;
+        return $str;
     }
 
 }

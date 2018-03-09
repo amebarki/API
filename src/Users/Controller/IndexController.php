@@ -18,13 +18,13 @@ class IndexController
     {
         $parameters = $request->attributes->all();
 
-        return $app['repository.user']->delete($parameters['id']);;
+        return $app['repository.user']->delete($parameters['email']);;
     }
 
     public function editAction(Request $request, Application $app)
     {
         $parameters = $request->attributes->all();
-        return $app['repository.user']->getById($parameters['id']);;
+        return $app['repository.user']->getByEmail($parameters['email']);;
     }
 
     public function saveAction(Request $request, Application $app)
@@ -41,15 +41,15 @@ class IndexController
 
     public function newAction(Request $request, Application $app)
     {
+		var_dump($request);
         $parameters = $request->request->all();
-
         return $app['repository.user']->insert($parameters);
     }
 
-    public function getIdAction(Request $request, Application $app)
+    public function getEmailAction(Request $request, Application $app)
     {
         $parameters = $request->attributes->all();
-        return $app['repository.user']->getById($parameters['id']);
+        return $app['repository.user']->getByEmail($parameters['email']);
     }
     public function getFacebookIdAction(Request $request, Application $app)
     {
@@ -83,12 +83,7 @@ class IndexController
 
     public function getlistPokemonAction(Request $request,Application $app){
         $parameters = $request->attributes->all();
-        return $app['repository.user']->getListPokemon($parameters['id']);
-    }
-
-    public function getBoosterPackAction(Request $request, Application $app){
-        $parameters = $request->attributes->all();
-        return $app['repository.user']->getBoosterPack($parameters['id']);
+        return $app['repository.user']->getListPokemon($parameters['email']);
     }
 
     public function getAcceptAction(Request $request, Application $app){

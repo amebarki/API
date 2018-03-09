@@ -56,25 +56,49 @@ class UserRepository
      *
      * @return Response
      */
-    public function getById($id)
+    public function getByEmail($email)
     {
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->select('u.*')
             ->from('users', 'u')
-            ->where('id = ?')
-            ->setParameter(0, $id);
+            ->where('email = ?')
+            ->setParameter(0, $email);
         $statement = $queryBuilder->execute();
         $userData = $statement->fetchAll();
-        $user = new User($userData[0]['id'], $userData[0]['name']);
-
-
-        return new Response(
-            $user->toJson(),
-            200,
-            ['Content-type' => 'application/json']
-        );
+        if($userData == null)
+        {
+            return new Response(
+                \GuzzleHttp\json_encode(null),
+                500,
+                ['Content-type' => 'application/json']
+            );
+        }else
+        {
+            $user = new User($userData[0]['id'], $userData[0]['name']);
+            return new Response(
+                $user->toJson(),
+                200,
+                ['Content-type' => 'application/json']
+            );
+        }
     }
+
+    public function getById($email)
+    {
+        $queryBuilder = $this->db->createQueryBuilder();
+        $queryBuilder
+            ->select('u.*')
+            ->from('users', 'u')
+            ->where('email = ?')
+            ->setParameter(0, $email);
+        $statement = $queryBuilder->execute();
+        $userData = $statement->fetchAll();
+        return $userData[0]['id'];
+    }
+
+
+
 
     /**
      * @param $facebookId of the user
@@ -124,14 +148,14 @@ class UserRepository
      * @param $id of an user
      * @return Response
      */
-    public function delete($id)
+    public function delete($email)
     {
         // manage erorr here
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->delete('users')
-            ->where('id = :id')
-            ->setParameter(':id', $id);
+            ->where('email = :email')
+            ->setParameter(':email', $email);
         $statement = $queryBuilder->execute();
         return new Response(
             "No erreur",
@@ -145,8 +169,8 @@ class UserRepository
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->update('users')
-            ->where('id = :id')
-            ->setParameter(':id', $parameters['id']);
+            ->where('email = :email')
+            ->setParameter(':email', $parameters['email']);
 
         if ($parameters['name']) {
             $queryBuilder
@@ -159,18 +183,21 @@ class UserRepository
 
     public function insert($parameters)
     {
+		$name =  urldecode($parameters["name"]);
+		$email = urldecode($parameters["email"]);
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->insert('users')
             ->values(
                 array(
                     'name' => ':name',
+                    'email' => ':email'
                 )
             )
-            ->setParameter(':name', $parameters['name']);
+            ->setParameters(array(':name' => $name, ':email' => $email ));
         $statement = $queryBuilder->execute();
         return new Response(
-            \GuzzleHttp\json_encode(array("name" => $parameters['name'])),
+            \GuzzleHttp\json_encode(array("name" => $name)),
             200,
             ['Content-type' => 'application/json']
         );
@@ -181,8 +208,9 @@ class UserRepository
      * @param $id of the user
      * @return Response return the list of pokemon of the user
      */
-    public function getListPokemon($id)
+    public function getListPokemon($email)
     {
+        $id = $this->getById($email);
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->select('p.*')
@@ -199,34 +227,7 @@ class UserRepository
         );
     }
 
-    /**
-     * @param $id if the user
-     * @return Response return a list of random Pokemon for the user
-     */
-    public function getBoosterPack($id)
-    {
-        $client = new Client();
-        $pokeService = new PokemonService($client);
-        for ($i = 0; $i < 9; $i++) {
-            $res = $client->request('GET', 'https://pokeapi.co/api/v2/generation/' . rand(1, 802));
-            $json_data = json_decode($res->getBody()->getContents(), true);
-            $name_tmp = $json_data['forms']['0']['name'];
-            $id_tmp = $json_data['id'];
-            if (count($json_data['types']) == 2) {
-                $type1_tmp = $json_data['types']['1']['type']['name'];
-                $type2_tmp = $json_data['types']['0']['type']['name'];
-            } else {
-                $type2_tmp = null;
-                $type1_tmp = $json_data['types']['0']['type']['name'];
-            }
 
-            $sprite_tmp = $json_data['sprites']['front_default'];
-            $tmp_desc = $pokeService->getDescById($id_tmp);
-
-        }
-
-
-    }
 
     /**
      * Function in charge of the exchange of pokemon
@@ -240,6 +241,9 @@ class UserRepository
     public function sharePokemon($parameters)
     {
         //$paramaters['id_user1'] $paramaters['id_user2'] $paramaters['id_pokemon1'] $paramaters['id_pokemon2']
+        //$paramaters['user1_email'] $paramaters['user2_email'] $paramaters['id_pokemon1'] $paramaters['id_pokemon2']
+
+        // parameters -> email user get user id after
 
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
@@ -258,7 +262,7 @@ class UserRepository
                 'user_id' => ':userId',
                 'pokemon_id' => ':pokemonId'
             ))
-            ->setParameters(array(':userId' => $parameters['user2_id'], ':pokemonId' => $parameters['pokemon_offer_id']));
+            ->setParameters(array(':userId' =>$parameters['user2_id'], ':pokemonId' => $parameters['pokemon_offer_id']));
         $statement = $queryBuilder->execute();
 
         $queryBuilder = $this->db->createQueryBuilder();
@@ -289,18 +293,22 @@ class UserRepository
      */
     public function insertOfferPokemon($parameters)
     {
+        // get user if from mail pass to the parameters
         // test two id to recup user id
+        $user_id = $this->getById($parameters['email']);
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->insert('exchanges')
             ->values(array(
                 'user_id' => ':user_id',
                 'pokemon_offer_id' => ':pokemon_offer_id',
-                'pokemon_wanted_id' => ':pokemon_wanted_id'
+                'pokemon_wanted_id' => ':pokemon_wanted_id',
+                'offer_accepted' => ':offer_accepted'
             ))
-            ->setParameters(array(':user_id' => $parameters['user_id'],
+            ->setParameters(array(':user_id' => $user_id,
                 ':pokemon_offer_id' => $parameters['pokemon_offer_id'],
-                ':pokemon_wanted_id' => $parameters['pokemon_wanted_id']));
+                ':pokemon_wanted_id' => $parameters['pokemon_wanted_id'],
+                ':offer_accepted' => $parameters['offer_accepted']));
         $statement = $queryBuilder->execute();
         return new Response(
             "Offer insert hopefully",
@@ -314,7 +322,9 @@ class UserRepository
      */
     public function acceptSharePokemon($parameters)
     {
+        // get mail from parameters and get id from the user 2
         // offer_accepted = 1 -> let's go
+        $user2_id = $this->getById($parameters['user2_email']);
         if ($parameters['offer_accepted']) {
 
             $queryBuilder = $this->db->createQueryBuilder();
@@ -328,7 +338,7 @@ class UserRepository
             $statement = $queryBuilder->execute();
         }
         $exchangeData = $this->getExchange($parameters['exchange_id']);
-        $exchangeData += ["user2_id" => $parameters['user2_id']];
+        $exchangeData += ["user2_id" => $user2_id];
         // proceed exchange pokemons
         $this->sharePokemon($exchangeData);
         return new Response(

@@ -57,6 +57,30 @@ class PokemonService
         );
     }
 
+    public function getPokemonById($id)
+    {
+
+        $client = new Client();
+        $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon/' . $id);
+        $json_data = json_decode($res->getBody()->getContents(), true);
+        $name_tmp = $json_data['forms']['0']['name'];
+        $id_tmp = $json_data['id'];
+        if (count($json_data['types']) == 2) {
+            $type1_tmp = $json_data['types']['1']['type']['name'];
+            $type2_tmp = $json_data['types']['0']['type']['name'];
+        } else {
+            $type2_tmp = null;
+            $type1_tmp = $json_data['types']['0']['type']['name'];
+        }
+
+        $sprite_tmp = $json_data['sprites']['front_default'];
+        $tmp_desc = $this->getDescById($id);
+        $pokemon = new Pokemon($id_tmp, $name_tmp, $type1_tmp, $type2_tmp, $sprite_tmp, $tmp_desc);
+
+        return $pokemon;
+
+    }
+
     public function getByName($name)
     {
         $client = new Client();
@@ -82,14 +106,19 @@ class PokemonService
         $client = new Client();
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon-species/' . $id);
         $json_data = json_decode($res->getBody()->getContents(), true);
-        $desc = $json_data['flavor_text_entries']['1']['flavor_text'];
+        $name_desc = $json_data['flavor_text_entries']['1']['language']['name'];
+        if($name_desc == "ja")
+            $desc = $json_data['flavor_text_entries']['2']['flavor_text'];
+        else
+            $desc = $json_data['flavor_text_entries']['1']['flavor_text'];
+
         return $desc;
     }
 
     public function receive($params)
     {
         $number = mt_rand(0, 100);
-		$res = \GuzzleHttp\json_encode(array('code' => $params['id'], 'name' => $params['name']));
+        $res = \GuzzleHttp\json_encode(array('code' => $params['id'], 'name' => $params['name']));
         return new Response(
             $res,
             200,
@@ -190,6 +219,23 @@ class PokemonService
         return $found;
     }
 
-
+    /**
+     * @param $id if the user
+     * @return Response return a list of random Pokemon for the user
+     */
+    public function getBoosterPack($email)
+    {
+        $client = new Client();
+        $pokeArray = [];
+        for ($i = 0; $i < 5; $i++) {
+            $pokemon = $this->getPokemonById(rand(1, 802));
+            $pokeArray[$i] = $pokemon;
+        }
+        return new Response(
+            \GuzzleHttp\json_encode($pokeArray),
+            200,
+            ['Content-type' => 'application/json']
+        );
+    }
 }
 

@@ -2,15 +2,15 @@
 
  // Repository Users
 $app->get('/local/users/list', 'App\Users\Controller\IndexController::listAction')->bind('users.list');
-$app->get('/local/users/edit/{id}', 'App\Users\Controller\IndexController::editAction')->bind('users.edit');
+$app->get('/local/users/edit/{email}', 'App\Users\Controller\IndexController::editAction')->bind('users.edit');
 $app->post('/local/users/new', 'App\Users\Controller\IndexController::newAction')->bind('users.new');
-$app->post('/local/users/delete/{id}', 'App\Users\Controller\IndexController::deleteAction')->bind('users.delete');
+$app->post('/local/users/delete/{email}', 'App\Users\Controller\IndexController::deleteAction')->bind('users.delete');
 $app->post('/local/users/save', 'App\Users\Controller\IndexController::saveAction')->bind('users.save');
 $app->get('/local/users/facebook/get/{id}', 'App\Users\Controller\IndexController::getFacebookIdAction')->bind('users.getFacebookId');
 $app->get('/local/users/google/get/{id}', 'App\Users\Controller\IndexController::getGoogleIdAction')->bind('users.getGoogleId');
-$app->get('/local/users/get/{id}', 'App\Users\Controller\IndexController::getIdAction')->bind('users.getId');
-$app->get('local/users/get/{id}/pokemon/list', 'App\Users\Controller\IndexController::getlistPokemonAction')->bind('users.listPokemon');
-$app->get('local/users/get/{id}/pokemon/booster', 'App\Pokemon\Controller\IndexController::getBoosterPackAction')->bind('pokemon.booster');
+$app->get('/local/users/get/{email}', 'App\Users\Controller\IndexController::getEmailAction')->bind('users.getEmail');
+$app->get('local/users/get/{email}/pokemon/list', 'App\Users\Controller\IndexController::getlistPokemonAction')->bind('users.listPokemon');
+$app->get('local/users/get/{email}/pokemon/booster', 'App\Pokemon\Controller\IndexController::getBoosterPackAction')->bind('pokemon.booster');
 
 $app->get('local/users/list/offer', 'App\Users\Controller\IndexController::getListOfferAction')->bind('pokemon.listOffer');
 $app->post('local/users/share', 'App\Users\Controller\IndexController::getShareAction')->bind('users.share');
