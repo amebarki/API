@@ -82,8 +82,8 @@ class PokemonRepository
 
     public function insert($parameters)
     {
-        $typeOne = $this->getTypeid($parameters['type1']);
-        $typeTwo = $this->getTypeid($parameters['type2']);
+        $type1 = $this->getTypeid($parameters['type1']);
+        $type2 = $this->getTypeid($parameters['type2']);
         $queryBuilder = $this->db->createQueryBuilder();
         $queryBuilder
             ->insert('pokemons')
@@ -101,8 +101,8 @@ class PokemonRepository
             ->setParameter(':name', $parameters['name'])
             ->setParameter(':sprite', $parameters['sprite'])
             ->setParameter(':description', $parameters['description'])
-            ->setParameter(':type1',  $typeOne)
-            ->setParameter(':type2', $typeTwo);
+            ->setParameter(':type1',  $type1)
+            ->setParameter(':type2', $type2);
         $statement = $queryBuilder->execute();
     }
 
