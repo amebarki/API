@@ -2,6 +2,9 @@
 
 namespace App\Pokemon\Service;
 
+use App\Users\Entity\User;
+use App\Users\Repository\UserRepository;
+use Silex\Application;
 use Symfony\Component\HttpFoundation\Response;
 use GuzzleHttp\Client;
 use App\Pokemon\Entity\Pokemon;
@@ -107,7 +110,7 @@ class PokemonService
         $res = $client->request('GET', 'https://pokeapi.co/api/v2/pokemon-species/' . $id);
         $json_data = json_decode($res->getBody()->getContents(), true);
         $name_desc = $json_data['flavor_text_entries']['1']['language']['name'];
-        if($name_desc == "ja")
+        if ($name_desc == "ja")
             $desc = $json_data['flavor_text_entries']['2']['flavor_text'];
         else
             $desc = $json_data['flavor_text_entries']['1']['flavor_text'];
@@ -223,13 +226,16 @@ class PokemonService
      * @param $id if the user
      * @return Response return a list of random Pokemon for the user
      */
-    public function getBoosterPack($email)
+    public function getBoosterPack($email,Application $app)
     {
-        $client = new Client();
+        $user_id = $app['repository.user']->getById($email);
         $pokeArray = [];
         for ($i = 0; $i < 5; $i++) {
             $pokemon = $this->getPokemonById(rand(1, 802));
             $pokeArray[$i] = $pokemon;
+            $app['repository.pokemon']->insertPokemon($pokemon);
+            $parameters = ['user_id' => $user_id, 'pokemon_id' => $pokemon->getId()];
+            $app['repository.pokemon']->insertCardPokemon($parameters);
         }
         return new Response(
             \GuzzleHttp\json_encode($pokeArray),
@@ -237,5 +243,7 @@ class PokemonService
             ['Content-type' => 'application/json']
         );
     }
+
+
 }
 

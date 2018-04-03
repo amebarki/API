@@ -48,7 +48,7 @@ class IndexController
 
     public function getBoosterPackAction(Request $request, Application $app){
         $parameters = $request->attributes->all();
-        return $app['service.pokemon']->getBoosterPack($parameters['email']);
+        return $app['service.pokemon']->getBoosterPack($parameters['email'],$app);
     }
 
     // Repository
@@ -62,7 +62,6 @@ class IndexController
         $parameters = $request->attributes->all();
         return $app['repository.pokemon']->delete($parameters['id']);
     }
-
 
 
     public function getIdAction(Request $request, Application $app)
